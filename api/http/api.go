@@ -19,6 +19,7 @@ import (
 
 	log "code.google.com/p/log4go"
 	"github.com/bmizerany/pat"
+	"github.com/influxdb/influxdb/api"
 	"github.com/influxdb/influxdb/cluster"
 	. "github.com/influxdb/influxdb/common"
 	"github.com/influxdb/influxdb/configuration"
@@ -35,7 +36,7 @@ type HttpServer struct {
 	httpSslPort      string
 	httpSslCert      string
 	adminAssetsDir   string
-	coordinator      coordinator.Coordinator
+	coordinator      api.Coordinator
 	userManager      UserManager
 	shutdown         chan bool
 	clusterConfig    *cluster.ClusterConfiguration
