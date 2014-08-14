@@ -1140,7 +1140,7 @@ func (self *HttpServer) configureDatabase(w libhttp.ResponseWriter, r *libhttp.R
 				return libhttp.StatusBadRequest, err.Error()
 			}
 			for _, query := range q {
-				if !query.SelectQuery.IsContinuousQuery() {
+				if !query.IsContinuousQuery() {
 					return libhttp.StatusBadRequest, fmt.Errorf("This query isn't a continuous query. Use 'into'. %s", query.QueryString)
 				}
 			}
