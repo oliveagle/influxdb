@@ -9,7 +9,6 @@ import (
 
 	"github.com/influxdb/influxdb/cluster"
 	"github.com/influxdb/influxdb/configuration"
-	"github.com/influxdb/influxdb/coordinator"
 	"github.com/influxdb/influxdb/engine"
 	"github.com/influxdb/influxdb/metastore"
 	"github.com/influxdb/influxdb/parser"
@@ -27,7 +26,7 @@ type DataMigrator struct {
 	metaStore     *metastore.Store
 	config        *configuration.Configuration
 	clusterConfig *cluster.ClusterConfiguration
-	coord         *coordinator.Coordinator
+	coord         Coordinator
 }
 
 const (
@@ -39,7 +38,7 @@ var (
 	endStreamResponse = protocol.Response_END_STREAM
 )
 
-func NewDataMigrator(coord *coordinator.Coordinator, clusterConfig *cluster.ClusterConfiguration, config *configuration.Configuration, baseDbDir, newSubDir string, metaStore *metastore.Store) *DataMigrator {
+func NewDataMigrator(coord Coordinator, clusterConfig *cluster.ClusterConfiguration, config *configuration.Configuration, baseDbDir, newSubDir string, metaStore *metastore.Store) *DataMigrator {
 	return &DataMigrator{
 		baseDbDir:     baseDbDir,
 		dbDir:         filepath.Join(baseDbDir, OLD_SHARD_DIR),

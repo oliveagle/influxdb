@@ -46,7 +46,7 @@ type HttpServer struct {
 	config           *configuration.Configuration
 }
 
-func NewHttpServer(config *configuration.Configuration, theCoordinator coordinator.Coordinator, userManager UserManager, clusterConfig *cluster.ClusterConfiguration, raftServer *coordinator.RaftServer) *HttpServer {
+func NewHttpServer(config *configuration.Configuration, theCoordinator api.Coordinator, userManager UserManager, clusterConfig *cluster.ClusterConfiguration, raftServer *coordinator.RaftServer) *HttpServer {
 	self := &HttpServer{}
 	self.httpPort = config.ApiHttpPortString()
 	self.adminAssetsDir = config.AdminAssetsDir
