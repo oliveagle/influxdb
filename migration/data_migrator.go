@@ -27,7 +27,7 @@ type DataMigrator struct {
 	metaStore     *metastore.Store
 	config        *configuration.Configuration
 	clusterConfig *cluster.ClusterConfiguration
-	coord         *coordinator.CoordinatorImpl
+	coord         *coordinator.Coordinator
 }
 
 const (
@@ -39,7 +39,7 @@ var (
 	endStreamResponse = protocol.Response_END_STREAM
 )
 
-func NewDataMigrator(coord *coordinator.CoordinatorImpl, clusterConfig *cluster.ClusterConfiguration, config *configuration.Configuration, baseDbDir, newSubDir string, metaStore *metastore.Store) *DataMigrator {
+func NewDataMigrator(coord *coordinator.Coordinator, clusterConfig *cluster.ClusterConfiguration, config *configuration.Configuration, baseDbDir, newSubDir string, metaStore *metastore.Store) *DataMigrator {
 	return &DataMigrator{
 		baseDbDir:     baseDbDir,
 		dbDir:         filepath.Join(baseDbDir, OLD_SHARD_DIR),

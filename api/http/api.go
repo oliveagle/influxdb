@@ -1177,7 +1177,7 @@ func (self *HttpServer) migrateData(w libhttp.ResponseWriter, r *libhttp.Request
 			log.Info("Starting Migration")
 			defer atomic.CompareAndSwapUint32(&self.migrationRunning, MIGRATION_RUNNING, MIGRATION_NOT_RUNNING)
 			dataMigrator := migration.NewDataMigrator(
-				self.coordinator.(*coordinator.CoordinatorImpl), self.clusterConfig, self.config, self.config.DataDir, "shard_db", self.clusterConfig.MetaStore)
+				self.coordinator, self.clusterConfig, self.config, self.config.DataDir, "shard_db", self.clusterConfig.MetaStore)
 			dataMigrator.Migrate()
 		}()
 
