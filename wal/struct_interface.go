@@ -4,6 +4,25 @@ import (
 	"github.com/influxdb/influxdb/protocol"
 )
 
+type confirmation struct {
+	requestNumber uint32
+	err           error
+}
+
+type Server interface {
+	GetId() uint32
+}
+
+type Shard interface {
+	Id() uint32
+}
+
+type bookmarkEvent struct {
+	shutdown         bool
+	confirmationChan chan *confirmation
+}
+
+// Entry
 type closeEntry struct {
 	confirmation chan *confirmation
 	// this is used for testing only

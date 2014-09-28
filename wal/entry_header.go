@@ -12,25 +12,12 @@ type entryHeader struct {
 }
 
 func (self *entryHeader) Write(w io.Writer) (int, error) {
-	size := 0
-
-	for _, n := range []uint32{self.requestNumber, self.shardId, self.length} {
-		if err := binary.Write(w, binary.BigEndian, n); err != nil {
-			return size, err
-		}
-		size += 4
-	}
-	return size, nil
+	// 写entryHeader中的数据到 io.Writer中.
+	// 用binary.Write(w, binary.BigEndian, (requestNumber, shardId, length))
+	// 返回 4+4+4, nil
 }
 
 func (self *entryHeader) Read(r io.Reader) (int, error) {
-	size := 0
-
-	for _, n := range []*uint32{&self.requestNumber, &self.shardId, &self.length} {
-		if err := binary.Read(r, binary.BigEndian, n); err != nil {
-			return size, err
-		}
-		size += 4
-	}
-	return size, nil
+	// binary.Read(r, binary.BigEndian,(&self.requestNumber, &self.shardId, &self.length))
+	// 返回 4+4+4, nil
 }
