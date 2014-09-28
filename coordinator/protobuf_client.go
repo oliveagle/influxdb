@@ -133,7 +133,7 @@ func (self *ProtobufClient) MakeRequest(request *protocol.Request, r cluster.Res
 		// before the uint32 ids roll over.
 		if oldReq, alreadyHasRequestById := self.requestBuffer[*request.Id]; alreadyHasRequestById {
 			message := "already has a request with this id, must have timed out"
-			log.Error(message)
+			log.Warn(message) // stop flooding ERROR level msg.
 			oldReq.r.Yield(&protocol.Response{
 				Type:         protocol.Response_ERROR.Enum(),
 				ErrorMessage: &message,

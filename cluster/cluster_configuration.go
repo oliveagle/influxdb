@@ -1071,7 +1071,7 @@ func (self *ClusterConfiguration) MarshalNewShardArrayToShards(newShards []*NewS
 		shard := NewShard(s.Id, s.StartTime, s.EndTime, s.Database, s.SpaceName, self.wal)
 		servers := make([]*ClusterServer, 0)
 		for _, serverId := range s.ServerIds {
-			if serverId == self.LocalServer.Id {
+			if self.LocalServer.Id != nil && serverId == self.LocalServer.Id {
 				err := shard.SetLocalStore(self.shardStore, self.LocalServer.Id)
 				if err != nil {
 					log.Error("AddShards: error setting local store: ", err)
@@ -1341,4 +1341,17 @@ func (self *ClusterConfiguration) getShardSpaceByDatabaseAndName(database, name 
 		}
 	}
 	return nil
+}
+
+func (self *ClusterConfiguration) addShardServer(shardId uint32, serverIds []uint32) {
+	self.shardLock.Lock()
+	defer self.shardLock.Unlock()
+	shard := self.shardsById[shardId]
+
+	// 3 steps to add a server into shard:
+	// 1. add serverId into shard's writeToServer list to make sure all data comes in from now will
+	//	also write to this serverId. we need to do a little bit hack here.
+	// 2. load all data with the timestamp before now, and write to the serverId
+	// 3. once step 2 finished, mark command as finished
+
 }

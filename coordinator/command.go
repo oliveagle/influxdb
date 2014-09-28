@@ -41,6 +41,7 @@ func init() {
 	}
 }
 
+// -------------------------------- SetContinuousQueryTimestampCommand -------------
 type SetContinuousQueryTimestampCommand struct {
 	Timestamp time.Time `json:"timestamp"`
 }
@@ -59,6 +60,7 @@ func (c *SetContinuousQueryTimestampCommand) Apply(server raft.Server) (interfac
 	return nil, err
 }
 
+// -------------------------------- CreateContinuousQueryCommand -------------
 type CreateContinuousQueryCommand struct {
 	Database string `json:"database"`
 	Query    string `json:"query"`
@@ -78,6 +80,7 @@ func (c *CreateContinuousQueryCommand) Apply(server raft.Server) (interface{}, e
 	return nil, err
 }
 
+// -------------------------------- DeleteContinuousQueryCommand -------------
 type DeleteContinuousQueryCommand struct {
 	Database string `json:"database"`
 	Id       uint32 `json:"id"`
@@ -97,6 +100,7 @@ func (c *DeleteContinuousQueryCommand) Apply(server raft.Server) (interface{}, e
 	return nil, err
 }
 
+// -------------------------------- DropDatabaseCommand -------------
 type DropDatabaseCommand struct {
 	Name string `json:"name"`
 }
@@ -115,6 +119,7 @@ func (c *DropDatabaseCommand) Apply(server raft.Server) (interface{}, error) {
 	return nil, err
 }
 
+// -------------------------------- CreateDatabaseCommand -------------
 type CreateDatabaseCommand struct {
 	Name string `json:"name"`
 }
@@ -133,6 +138,7 @@ func (c *CreateDatabaseCommand) Apply(server raft.Server) (interface{}, error) {
 	return nil, err
 }
 
+// -------------------------------- SaveDbUserCommand -------------
 type SaveDbUserCommand struct {
 	User *cluster.DbUser `json:"user"`
 }
@@ -154,6 +160,7 @@ func (c *SaveDbUserCommand) Apply(server raft.Server) (interface{}, error) {
 	return nil, nil
 }
 
+// -------------------------------- ChangeDbUserPassword -------------
 type ChangeDbUserPassword struct {
 	Database string
 	Username string
@@ -178,6 +185,7 @@ func (c *ChangeDbUserPassword) Apply(server raft.Server) (interface{}, error) {
 	return nil, config.ChangeDbUserPassword(c.Database, c.Username, c.Hash)
 }
 
+// -------------------------------- ChangeDbUserPermissions -------------
 type ChangeDbUserPermissions struct {
 	Database         string
 	Username         string
@@ -204,6 +212,7 @@ func (c *ChangeDbUserPermissions) Apply(server raft.Server) (interface{}, error)
 	return nil, config.ChangeDbUserPermissions(c.Database, c.Username, c.ReadPermissions, c.WritePermissions)
 }
 
+// -------------------------------- SaveClusterAdminCommand -------------
 type SaveClusterAdminCommand struct {
 	User *cluster.ClusterAdmin `json:"user"`
 }
@@ -224,6 +233,7 @@ func (c *SaveClusterAdminCommand) Apply(server raft.Server) (interface{}, error)
 	return nil, nil
 }
 
+// -------------------------------- InfluxJoinCommand -------------
 type InfluxJoinCommand struct {
 	Name                     string `json:"name"`
 	ConnectionString         string `json:"connectionString"`
@@ -263,6 +273,7 @@ func (c *InfluxJoinCommand) NodeName() string {
 	return c.Name
 }
 
+// -------------------------------- InfluxForceLeaveCommand -------------
 type InfluxForceLeaveCommand struct {
 	Id uint32 `json:"id"`
 }
@@ -291,6 +302,7 @@ func (c *InfluxForceLeaveCommand) Apply(server raft.Server) (interface{}, error)
 	return nil, nil
 }
 
+// -------------------------------- InfluxChangeConnectionStringCommand -------------
 type InfluxChangeConnectionStringCommand struct {
 	Name                     string `json:"name"`
 	Force                    bool   `json:"force"`
@@ -330,6 +342,7 @@ func (c *InfluxChangeConnectionStringCommand) NodeName() string {
 	return c.Name
 }
 
+// -------------------------------- CreateShardsCommand -------------
 type CreateShardsCommand struct {
 	Shards    []*cluster.NewShardData
 	SpaceName string
@@ -367,6 +380,7 @@ func (c *CreateShardsCommand) Apply(server raft.Server) (interface{}, error) {
 	return createdShardData, nil
 }
 
+// -------------------------------- DropShardCommand -------------
 type DropShardCommand struct {
 	ShardId   uint32
 	ServerIds []uint32
@@ -386,6 +400,7 @@ func (c *DropShardCommand) Apply(server raft.Server) (interface{}, error) {
 	return nil, err
 }
 
+// -------------------------------- CreateSeriesFieldIdsCommand -------------
 type CreateSeriesFieldIdsCommand struct {
 	Database string
 	Series   []*protocol.Series
@@ -417,6 +432,7 @@ func (c *CreateSeriesFieldIdsCommand) Apply(server raft.Server) (interface{}, er
 	return c.Series, err
 }
 
+// -------------------------------- DropSeriesCommand -------------
 type DropSeriesCommand struct {
 	Database string
 	Series   string
@@ -436,6 +452,7 @@ func (c *DropSeriesCommand) Apply(server raft.Server) (interface{}, error) {
 	return nil, err
 }
 
+// -------------------------------- CreateShardSpaceCommand -------------
 type CreateShardSpaceCommand struct {
 	ShardSpace *cluster.ShardSpace
 }
@@ -454,6 +471,7 @@ func (c *CreateShardSpaceCommand) Apply(server raft.Server) (interface{}, error)
 	return nil, err
 }
 
+// -------------------------------- DropShardSpaceCommand -------------
 type DropShardSpaceCommand struct {
 	Database string
 	Name     string
@@ -473,6 +491,7 @@ func (c *DropShardSpaceCommand) Apply(server raft.Server) (interface{}, error) {
 	return nil, err
 }
 
+// -------------------------------- UpdateShardSpaceCommand -------------
 type UpdateShardSpaceCommand struct {
 	ShardSpace *cluster.ShardSpace
 }
@@ -489,4 +508,36 @@ func (c *UpdateShardSpaceCommand) Apply(server raft.Server) (interface{}, error)
 	config := server.Context().(*cluster.ClusterConfiguration)
 	err := config.UpdateShardSpace(c.ShardSpace)
 	return nil, err
+}
+
+// -------------------------------- AddShardServerCommand -------------
+// currently master is handling this command only.
+type AddShardServerCommand struct {
+	ShardId    uint32
+	StartTime  time.Time
+	FinishTime time.Time
+	ServerIds  []uint32
+	IsFinished bool
+}
+
+func NewAddShardServerCommand(shardId uint32, serverIds []uint32) *AddShardServer {
+	return &AddShardServerCommand{
+		ShardId:    shardId,
+		ServerIds:  serverIds,
+		StartTime:  time.Now(),
+		FinishTime: nil,
+		IsFinished: false,
+	}
+}
+
+func (c *AddShardServerCommand) CommandName() string {
+	return "add_shard_server"
+}
+
+func (c *AddShardServerCommand) Apply(server raft.Server) (interface{}, error) {
+	// TODO: AddShardServerCommand.Apply
+	return nil, nil
+	// config := server.Context().(*cluster.ClusterConfiguration)
+	// err := config.UpdateShardSpace(c.ShardSpace)
+	// return nil, err
 }
